@@ -33,10 +33,17 @@ tasks:
     cmds:
       - docker compose logs -f app
 
+  artisan:
+    desc: Запустить php artisan ...
+    cmds:
+      - docker compose exec app php artisan {{.CLI_ARGS}}
+    vars:
+      CLI_ARGS: '{{.CLI_ARGS}}'
+
   shell:
     desc: Зайти в контейнер
     cmds:
-      - docker compose exec app bash
+      - docker compose exec app sh
 
   php:
     desc: Проверить версию PHP и расширения
