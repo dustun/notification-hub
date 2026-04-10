@@ -1,7 +1,15 @@
 :80 {
+    log
+
     root * /var/www/html/public
+
+    php_fastcgi app:9000 {
+                             root /var/www/html/public
+                             trusted_proxies 0.0.0.0/0
+                         }
+
     encode zstd gzip
-    php_fastcgi app:9000
     file_server
+
     try_files {path} {path}/ /index.php?{query}
 }

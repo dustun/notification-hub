@@ -8,7 +8,6 @@ services:
     image: image-processor-app
     container_name: image-processor-app
     restart: unless-stopped
-    user: "1000:1000"
     volumes:
       - .:/var/www/html
     networks:
@@ -25,6 +24,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - .:/var/www/html:ro
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
@@ -40,8 +40,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_DB: image_processor
-      POSTGRES_USER: sail
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 1234
     volumes:
       - pgsql_data:/var/lib/postgresql/data
     networks:
@@ -49,6 +49,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    container_name: redis
     restart: unless-stopped
     ports:
       - "6379:6379"
