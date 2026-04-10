@@ -50,3 +50,13 @@ tasks:
     cmds:
       - docker compose exec app php -v
       - docker compose exec app php -m | grep -E 'redis|sockets|pdo_pgsql'
+
+  cs:
+    desc: PHP CS Fixer — исправить код
+    cmds:
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --verbose
+
+  cs:dry:
+    desc: PHP CS Fixer — проверить без изменений
+    cmds:
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --dry-run --verbose
