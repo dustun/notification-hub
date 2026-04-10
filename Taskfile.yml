@@ -1,0 +1,62 @@
+version: '3'
+
+tasks:
+
+  up:
+    desc: Запустить проект (БЕЗ пересборки — быстро)
+    cmds:
+      - docker compose up -d
+
+  up-build:
+    desc: Пересобрать образ и запустить (используй только когда менял Dockerfile или зависимости)
+    cmds:
+      - docker compose up -d --build
+
+  rebuild:
+    desc: Полная пересборка без кэша (когда всё совсем плохо)
+    cmds:
+      - docker compose down --rmi local -v
+      - docker compose up -d --build
+
+  down:
+    desc: Остановить всё
+    cmds:
+      - docker compose down
+
+  restart:
+    desc: Перезапустить без пересборки
+    cmds:
+      - docker compose restart
+
+  logs:
+    desc: Логи приложения
+    cmds:
+      - docker compose logs -f app
+
+  artisan:
+    desc: Запустить php artisan ...
+    cmds:
+      - docker compose exec app php artisan {{.CLI_ARGS}}
+    vars:
+      CLI_ARGS: '{{.CLI_ARGS}}'
+
+  shell:
+    desc: Зайти в контейнер
+    cmds:
+      - docker compose exec app sh
+
+  php:
+    desc: Проверить версию PHP и расширения
+    cmds:
+      - docker compose exec app php -v
+      - docker compose exec app php -m | grep -E 'redis|sockets|pdo_pgsql'
+
+  cs:
+    desc: PHP CS Fixer — исправить код
+    cmds:
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --verbose
+
+  cs:dry:
+    desc: PHP CS Fixer — проверить без изменений
+    cmds:
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --dry-run --verbose
