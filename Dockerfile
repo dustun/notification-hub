@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     freetype-dev \
     postgresql-dev \
     libzip-dev \
+    icu-dev \
     zip \
     unzip \
     git \
@@ -28,9 +29,10 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         bcmath \
         opcache \
         sockets \
+        intl \
+        exif \
     && pecl install -o -f redis \
     && docker-php-ext-enable redis \
-    # Удаляем тяжёлые build-инструменты
     && apk del autoconf g++ make pcre-dev
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -45,7 +47,8 @@ COPY . .
 COPY .docker/supervisord.conf /etc/supervisord.conf
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
-    && composer dump-autoload --optimize
+    && composer dump-autoload --optimize \
+    && mkdir -p /var/log /var/run
 
 EXPOSE 9000
 

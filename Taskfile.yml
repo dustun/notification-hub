@@ -34,11 +34,9 @@ tasks:
       - docker compose logs -f app
 
   artisan:
-    desc: Запустить php artisan ...
+    desc: Запустить artisan команду (полное название)
     cmds:
-      - docker compose exec app php artisan {{.CLI_ARGS}}
-    vars:
-      CLI_ARGS: '{{.CLI_ARGS}}'
+      - sh -c 'docker compose exec app php artisan "$@"' -- "$@"
 
   shell:
     desc: Зайти в контейнер
