@@ -1,0 +1,35 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+    level: 8
+
+    paths:
+        - app
+        - config
+        - database
+        - routes
+        - tests
+        - bootstrap
+
+    # Строгие настройки для качественной проверки типов
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkImplicitMixed: true
+    checkUninitializedProperties: true
+    checkDynamicProperties: true
+
+    # Пути, которые нужно проанализировать
+    scanFiles:
+        - bootstrap/app.php
+
+    # Исключения: только самые необходимые для Laravel
+    ignoreErrors:
+        # PDO классы доступны только в PHP 8.5+, игнорируем в config/database.php
+        - identifier: class.notFound
+          path: config/database.php
+        # array_filter может вернуть смешанный тип ключей
+        - identifier: array.invalidKey
+          path: config/database.php
+
+    # Вывод информации об ошибках
+    reportUnmatchedIgnoredErrors: true
