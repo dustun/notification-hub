@@ -1,0 +1,45 @@
+version: '3'
+
+tasks:
+
+  up:
+    desc: Запустить проект (БЕЗ пересборки — быстро)
+    cmds:
+      - docker compose up -d
+
+  up-build:
+    desc: Пересобрать образ и запустить (используй только когда менял Dockerfile или зависимости)
+    cmds:
+      - docker compose up -d --build
+
+  rebuild:
+    desc: Полная пересборка без кэша (когда всё совсем плохо)
+    cmds:
+      - docker compose down --rmi local -v
+      - docker compose up -d --build
+
+  down:
+    desc: Остановить всё
+    cmds:
+      - docker compose down
+
+  restart:
+    desc: Перезапустить без пересборки
+    cmds:
+      - docker compose restart
+
+  logs:
+    desc: Логи приложения
+    cmds:
+      - docker compose logs -f app
+
+  shell:
+    desc: Зайти в контейнер
+    cmds:
+      - docker compose exec app bash
+
+  php:
+    desc: Проверить версию PHP и расширения
+    cmds:
+      - docker compose exec app php -v
+      - docker compose exec app php -m | grep -E 'redis|sockets|pdo_pgsql'
