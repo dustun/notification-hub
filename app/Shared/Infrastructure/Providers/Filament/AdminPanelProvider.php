@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Providers\Filament;
+namespace App\Shared\Infrastructure\Providers\Filament;
 
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;

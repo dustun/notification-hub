@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Auth\Infrastructure\Models\EloquentUser;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends Factory<User>
+ * @extends Factory<EloquentUser>
  */
-class UserFactory extends Factory
+class EloquentUserFactory extends Factory
 {
     /**
      * The current password being used by the factory.

@@ -1,0 +1,47 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Shared\Infrastructure\Providers;
+
+use App\Auth\Domain\Contracts\UserRepositoryInterface;
+use App\Auth\Infrastructure\Repositories\EloquentUserRepository;
+use App\Shared\Domain\Contracts\HasherInterface;
+use App\Shared\Domain\Contracts\TokenCreatorInterface;
+use App\Shared\Infrastructure\Services\HasherService;
+use App\Shared\Infrastructure\Services\SanctumTokenCreatorService;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        // Auth repositories
+        $this->app->bind(
+            UserRepositoryInterface::class,
+            EloquentUserRepository::class
+        );
+
+        // Shared services
+        $this->app->bind(
+            HasherInterface::class,
+            HasherService::class
+        );
+
+        $this->app->bind(
+            TokenCreatorInterface::class,
+            SanctumTokenCreatorService::class
+        );
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //
+    }
+}

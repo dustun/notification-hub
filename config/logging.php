@@ -54,7 +54,10 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(
+                ',',
+                is_string($stack = env('LOG_STACK', 'single')) ? $stack : 'single'
+            ),
             'ignore_exceptions' => false,
         ],
 
@@ -89,7 +92,11 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => sprintf(
+                    'tls://%s:%s',
+                    is_string($host = env('PAPERTRAIL_URL')) ? $host : '',
+                    is_scalar($port = env('PAPERTRAIL_PORT')) ? (string) $port : ''
+                ),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
