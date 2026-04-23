@@ -99,11 +99,13 @@ return [
 
     'key' => env('APP_KEY'),
 
-    'previous_keys' => [
-        ...array_filter(
-            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
-        ),
-    ],
+    'previous_keys' => (static function (): array {
+        $keys = env('APP_PREVIOUS_KEYS', '');
+
+        return array_filter(
+            explode(',', is_string($keys) ? $keys : '')
+        );
+    })(),
 
     /*
     |--------------------------------------------------------------------------
