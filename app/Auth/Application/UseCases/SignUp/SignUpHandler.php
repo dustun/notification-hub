@@ -6,6 +6,7 @@ namespace App\Auth\Application\UseCases\SignUp;
 
 use App\Auth\Domain\Contracts\UserRepositoryInterface;
 use App\Auth\Domain\Entities\User;
+use App\Auth\Domain\Events\UserRegistered;
 use App\Auth\Domain\ValueObjects\Name;
 use App\Auth\Infrastructure\Exceptions\NotFoundException;
 use App\Shared\Domain\ValueObjects\Email;
@@ -47,13 +48,15 @@ readonly class SignUpHandler
 
         $this->userRepository->save($domainUser);
 
+        event(new UserRegistered($domainUser));
+
         $token = $this->sanctumTokenCreatorService->create(
             userId: $domainUser->id->value(),
             tokenName: 'web'
         );
 
-        return new SignUpOutput(
-            token: $token
-        );
+        return SignUpOutput::from([
+            $token,
+        ]);
     }
 }

@@ -1,6 +1,11 @@
 <?php
 
+use App\Shared\Infrastructure\Providers\AppServiceProvider;
+use App\Shared\Infrastructure\Providers\EventServiceProvider;
+use App\Shared\Infrastructure\Providers\Filament\AdminPanelProvider;
+
 return [
-    \App\Shared\Infrastructure\Providers\AppServiceProvider::class,
-    \App\Shared\Infrastructure\Providers\Filament\AdminPanelProvider::class,
+    AppServiceProvider::class,
+    AdminPanelProvider::class,
+    EventServiceProvider::class
 ];

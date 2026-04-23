@@ -6,6 +6,8 @@ namespace App\Shared\Infrastructure\Providers;
 
 use App\Auth\Domain\Contracts\UserRepositoryInterface;
 use App\Auth\Infrastructure\Repositories\EloquentUserRepository;
+use App\Mail\Application\Contracts\MailSender;
+use App\Mail\Infrastructure\Services\LaravelMailSender;
 use App\Shared\Domain\Contracts\HasherInterface;
 use App\Shared\Domain\Contracts\TokenCreatorInterface;
 use App\Shared\Infrastructure\Services\HasherService;
@@ -19,13 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Auth repositories
         $this->app->bind(
             UserRepositoryInterface::class,
             EloquentUserRepository::class
         );
 
-        // Shared services
         $this->app->bind(
             HasherInterface::class,
             HasherService::class
@@ -35,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
             TokenCreatorInterface::class,
             SanctumTokenCreatorService::class
         );
+
+        //        $this->app->bind(
+        //            MailSender::class,
+        //            LaravelMailSender::class
+        //        );
     }
 
     /**

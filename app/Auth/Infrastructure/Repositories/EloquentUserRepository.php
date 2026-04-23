@@ -23,6 +23,15 @@ class EloquentUserRepository implements UserRepositoryInterface
         return $model ? $this->toDomain($model) : null;
     }
 
+    public function byEmail(Email $email): ?DomainUser
+    {
+        $model = EloquentUser::query()
+            ->where('email', $email->value())
+            ->first();
+
+        return $model ? $this->toDomain($model) : null;
+    }
+
     public function existByEmail(Email $email): bool
     {
         return EloquentUser::query()
@@ -32,14 +41,15 @@ class EloquentUserRepository implements UserRepositoryInterface
 
     public function save(DomainUser $model): void
     {
-        $eloquentUser = new EloquentUser();
-
-        $eloquentUser->id = $model->id->value();
-        $eloquentUser->name = $model->name->value();
-        $eloquentUser->email = $model->email->value();
-        $eloquentUser->password = $model->password->value();
-
-        $eloquentUser->save();
+        EloquentUser::query()->updateOrCreate(
+            ['id' => $model->id->value()],
+            [
+                'name' => $model->name->value(),
+                'email' => $model->email->value(),
+                'password' => $model->password->value(),
+                'email_verified_at' => $model->emailVerifiedAt,
+            ]
+        );
     }
 
     private function toDomain(EloquentUser $model): DomainUser

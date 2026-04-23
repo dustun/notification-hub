@@ -40,6 +40,8 @@ class EloquentUser extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'id',
+        'email_verified_at',
     ];
 
     protected $hidden = [

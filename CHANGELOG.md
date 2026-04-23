@@ -8,9 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added (Planned)
-- User authentication (login) endpoint
 - Logout functionality
-- Email verification (send confirmation email + verification endpoint)
+
+---
+
+## [0.3.1] - 2026-04-23
+
+### Added
+- User authentication (SignIn)
+    - `POST /api/v1/auth/sign-in` endpoint
+    - Password verification using HasherService
+    - Sanctum token generation via TokenCreator service
+- Email verification system (stateless)
+    - Temporary signed URL verification
+    - `GET /api/v1/auth/verify-email` endpoint
+    - Email confirmation via signed route
+- Queue-based email delivery
+    - `SendEmailVerificationJob` for async email sending
+
+### Changed
+- Refactored authentication flow to align with DDD principles
+- Replaced token-based email verification with signed URLs (removed DB dependency)
+- Simplified queue architecture (eliminated double queue issue)
+- Improved MailSender abstraction and typing
+- Updated UserRepository to support email verification updates
+
+### Fixed
+- Fixed double queue execution (listener + mailable conflict)
+- Fixed URL generation issues (port leakage in verification links)
+- Fixed PHPStan errors across Mail and Auth modules (strict typing, generics)
 
 ## [0.3.0] - 2026-04-21
 
@@ -66,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Switched from Laravel Sail to fully custom Docker environment
 
-[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/Drukster/image-processor/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Drukster/image-processor/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Drukster/image-processor/releases/tag/v0.2.0
 [0.1.0]: https://github.com/Drukster/image-processor/releases/tag/v0.1.0

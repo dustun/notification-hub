@@ -11,8 +11,7 @@ use App\Shared\Domain\ValueObjects\UUID;
 interface UserRepositoryInterface
 {
     public function byId(UUID $id): ?User;
-
+    public function byEmail(Email $email): ?User;
     public function existByEmail(Email $email): bool;
-
     public function save(User $model): void;
 }
