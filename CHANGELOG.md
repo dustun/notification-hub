@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed double queue execution (listener + mailable conflict)
 - Fixed URL generation issues (port leakage in verification links)
 - Fixed PHPStan errors across Mail and Auth modules (strict typing, generics)
+- Remove outdated ignore patterns from phpstan.neon
+- Add ext-pdo dependency to composer.json (required by PHPStan for PDO::MYSQL_ATTR_SSL_CA usage)
+- Remove incorrect 'use PDO;' statement from database.php (PDO is built-in class, not a namespace)
+- Use PDO::MYSQL_ATTR_SSL_CA constant directly instead of version-dependent check
+- All PHPStan checks now pass without errors
 
 ## [0.3.0] - 2026-04-21
 
