@@ -61,7 +61,7 @@
                         </p>
 
                         <p style="font-size:13px; color:#999; margin-top:30px;">
-                            This link will expire in 24 hours.
+                            This link will expire in 60 minutes.
                         </p>
 
                     </td>

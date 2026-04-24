@@ -21,13 +21,12 @@ readonly class SendEmailVerificationNotification
             ['user' => $user->id->value()]
         );
 
-        dispatch(
-            new SendEmailVerificationJob(
-                userId: $user->id->value(),
-                email: $user->email->value(),
-                name: $user->name->value(),
-                verificationUrl: $url
-            )
-        );
+        SendEmailVerificationJob::dispatch(
+            userId: $user->id->value(),
+            email: $user->email->value(),
+            name: $user->name->value(),
+            verificationUrl: $url
+        )
+            ->afterCommit();
     }
 }

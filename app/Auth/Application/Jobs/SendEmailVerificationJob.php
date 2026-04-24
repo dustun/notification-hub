@@ -4,21 +4,42 @@ declare(strict_types=1);
 
 namespace App\Auth\Application\Jobs;
 
-use App\Mail\Infrastructure\Services\LaravelMailSender;
+use App\Mail\Application\Contracts\MailSender;
 use App\Shared\Domain\ValueObjects\Email;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class SendEmailVerificationJob implements ShouldQueue
 {
+    use Dispatchable;
+    use Queueable;
+    use SerializesModels;
+
+    public int $tries = 3;
+
+    public int $timeout = 30;
+
     public function __construct(
         public string $userId,
         public string $email,
         public string $name,
         public string $verificationUrl,
-    ) {}
+    ) {
+        $this->onQueue('notifications');
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function backoff(): array
+    {
+        return [60, 300, 900];
+    }
 
     public function handle(
-        LaravelMailSender $mailSender
+        MailSender $mailSender
     ): void {
         $mailSender->send(
             new Email($this->email),

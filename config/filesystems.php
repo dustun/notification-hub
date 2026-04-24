@@ -41,7 +41,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            (static function (): string {
+            'url' => (static function (): string {
                 $url = env('APP_URL', 'http://localhost');
 
                 $url = is_string($url) ? $url : 'http://localhost';

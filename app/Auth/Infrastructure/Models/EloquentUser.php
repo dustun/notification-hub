@@ -22,7 +22,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $email
  * @property string $password
  *
- * @property Carbon $email_verified_at
+ * @property Carbon|null $email_verified_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -55,6 +55,11 @@ class EloquentUser extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function newFactory(): EloquentUserFactory
+    {
+        return EloquentUserFactory::new();
     }
 
     public function canAccessPanel(Panel $panel): bool

@@ -59,6 +59,7 @@ class EloquentUserRepository implements UserRepositoryInterface
             name: new Name($model->name),
             email: new Email($model->email),
             password: new Password($model->password),
+            emailVerifiedAt: $model->email_verified_at?->toDateTimeImmutable(),
         );
     }
 }

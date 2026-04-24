@@ -9,22 +9,25 @@ use App\Auth\Domain\Entities\User;
 use App\Auth\Domain\Events\UserRegistered;
 use App\Auth\Domain\ValueObjects\Name;
 use App\Auth\Infrastructure\Exceptions\NotFoundException;
+use App\Shared\Domain\Contracts\HasherInterface;
+use App\Shared\Domain\Contracts\TokenCreatorInterface;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\Password;
 use App\Shared\Domain\ValueObjects\UUID;
-use App\Shared\Infrastructure\Services\HasherService;
-use App\Shared\Infrastructure\Services\SanctumTokenCreatorService;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 readonly class SignUpHandler
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
-        private HasherService           $hasherService,
-        private SanctumTokenCreatorService $sanctumTokenCreatorService
+        private HasherInterface         $hasherService,
+        private TokenCreatorInterface   $tokenCreator,
     ) {}
 
     /**
      * @throws NotFoundException
+     * @throws Throwable
      */
     public function execute(
         SignUpInput $data
@@ -46,17 +49,24 @@ readonly class SignUpHandler
             )
         );
 
-        $this->userRepository->save($domainUser);
+        /** @var SignUpOutput $result */
+        $result = DB::transaction(function () use ($domainUser): SignUpOutput {
+            $this->userRepository->save($domainUser);
 
-        event(new UserRegistered($domainUser));
+            DB::afterCommit(
+                fn(): ?array => event(new UserRegistered($domainUser))
+            );
 
-        $token = $this->sanctumTokenCreatorService->create(
-            userId: $domainUser->id->value(),
-            tokenName: 'web'
-        );
+            $token = $this->tokenCreator->create(
+                userId: $domainUser->id->value(),
+                tokenName: 'web'
+            );
 
-        return SignUpOutput::from([
-            $token,
-        ]);
+            return SignUpOutput::from([
+                'token' => $token,
+            ]);
+        });
+
+        return $result;
     }
 }
