@@ -50,5 +50,7 @@
     "Name": "Имя",
     "Email": "Электронная почта",
     "Created at": "Дата создания",
-    "Updated at": "Дата обновления"
+    "Updated at": "Дата обновления",
+    "Password": "Пароль",
+    "Password confirmation": "Подтвержденный пароль"
 }

@@ -24,3 +24,4 @@ Homestead.yaml
 Thumbs.db
 /supervisord.log
 /supervisord.pid
+/storage/api-docs/api-docs.json

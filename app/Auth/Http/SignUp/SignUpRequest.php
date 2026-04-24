@@ -6,7 +6,19 @@ namespace App\Auth\Http\SignUp;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'AuthSignUpRequest',
+    required: ['name', 'email', 'password', 'passwordConfirmation'],
+    properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Imran'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'imran@example.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'StrongPassword123!'),
+        new OA\Property(property: 'passwordConfirmation', type: 'string', format: 'password', example: 'StrongPassword123!'),
+    ],
+    type: 'object',
+)]
 class SignUpRequest extends FormRequest
 {
     /**
