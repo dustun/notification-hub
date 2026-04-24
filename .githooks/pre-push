@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+cd "$ROOT_DIR"
+
+echo "Running pre-push quality checks..."
+task check

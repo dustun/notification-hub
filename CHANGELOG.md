@@ -14,6 +14,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.4] - 2026-04-24
+
+### Added
+- Repository Git hooks for `pre-commit` and `pre-push`
+  - both hooks now run the local quality gate before changes can be committed or pushed
+- `task test` command for Laravel tests inside the application container
+- `task check` command as a single local quality gate entry point
+- `task pre-push` and `task ci` aliases for clearer local verification workflows
+- `task hooks:install` and `task hooks:uninstall` commands to manage the repository hook path
+- Dependabot configuration for:
+  - Composer dependencies
+  - npm dependencies
+  - GitHub Actions updates
+
+### Changed
+- Expanded GitHub Actions quality gate to include Laravel tests
+- Raised CI static analysis to PHPStan level 9
+- Updated project documentation to explain:
+  - local hook-based guardrails
+  - the full quality gate workflow
+  - Dependabot behavior and setup
+
+### Fixed
+- Aligned local checks and CI checks around the same validation flow
+
+---
+
 ## [0.3.3] - 2026-04-24
 
 ### Added
@@ -165,7 +192,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Switched from Laravel Sail to fully custom Docker environment
 
-[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.3...HEAD
+[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.4...HEAD
+[0.3.4]: https://github.com/Drukster/image-processor/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/Drukster/image-processor/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/Drukster/image-processor/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Drukster/image-processor/compare/v0.3.0...v0.3.1

@@ -27,12 +27,14 @@ class SwaggerGenerationTest extends TestCase
 
         /** @var array<string, mixed> $decoded */
         $decoded = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
+        $paths = $decoded['paths'] ?? null;
 
         $this->assertArrayHasKey('paths', $decoded);
-        $this->assertArrayHasKey('/api/v1/auth/sign-up', $decoded['paths']);
-        $this->assertArrayHasKey('/api/v1/auth/sign-in', $decoded['paths']);
-        $this->assertArrayHasKey('/api/v1/auth/verify-email', $decoded['paths']);
-        $this->assertArrayHasKey('/api/v1/auth/logout', $decoded['paths']);
+        $this->assertIsArray($paths);
+        $this->assertArrayHasKey('/api/v1/auth/sign-up', $paths);
+        $this->assertArrayHasKey('/api/v1/auth/sign-in', $paths);
+        $this->assertArrayHasKey('/api/v1/auth/verify-email', $paths);
+        $this->assertArrayHasKey('/api/v1/auth/logout', $paths);
     }
 
     public function test_swagger_http_endpoints_are_accessible_after_generation(): void
