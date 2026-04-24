@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => env('QUEUE_CONNECTION', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +79,34 @@ return [
             'after_commit' => false,
         ],
 
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            'connection' => 'default',
+            'hosts' => [
+                [
+                    'host' => env('RABBITMQ_HOST', '127.0.0.1'),
+                    'port' => env('RABBITMQ_PORT', 5672),
+                    'user' => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
+                    'vhost' => env('RABBITMQ_VHOST', '/'),
+                ],
+            ],
+            'worker' => env('RABBITMQ_WORKER', 'default'),
+            'options' => [
+                'queue' => [
+                    'exchange' => env('RABBITMQ_EXCHANGE', 'image-processor'),
+                    'exchange_type' => env('RABBITMQ_EXCHANGE_TYPE', 'direct'),
+                    'exchange_routing_key' => env('RABBITMQ_ROUTING_KEY', '%s'),
+                    'prioritize_delayed' => env('RABBITMQ_PRIORITIZE_DELAYED', false),
+                    'queue_max_priority' => env('RABBITMQ_QUEUE_MAX_PRIORITY', 10),
+                    'reroute_failed' => env('RABBITMQ_REROUTE_FAILED', true),
+                    'failed_exchange' => env('RABBITMQ_FAILED_EXCHANGE', 'image-processor.failed'),
+                    'failed_routing_key' => env('RABBITMQ_FAILED_ROUTING_KEY', '%s.failed'),
+                ],
+            ],
+        ],
+
         'deferred' => [
             'driver' => 'deferred',
         ],
@@ -90,7 +118,7 @@ return [
         'failover' => [
             'driver' => 'failover',
             'connections' => [
-                'database',
+                'rabbitmq',
                 'deferred',
             ],
         ],
@@ -109,7 +137,7 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION', 'sqlite'),
+        'database' => env('DB_CONNECTION', 'pgsql'),
         'table' => 'job_batches',
     ],
 
@@ -128,7 +156,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION', 'sqlite'),
+        'database' => env('DB_CONNECTION', 'pgsql'),
         'table' => 'failed_jobs',
     ],
 

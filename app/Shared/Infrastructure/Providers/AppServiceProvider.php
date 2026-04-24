@@ -36,10 +36,10 @@ class AppServiceProvider extends ServiceProvider
             SanctumTokenCreatorService::class
         );
 
-        //        $this->app->bind(
-        //            MailSender::class,
-        //            LaravelMailSender::class
-        //        );
+        $this->app->bind(
+            MailSender::class,
+            LaravelMailSender::class
+        );
     }
 
     /**

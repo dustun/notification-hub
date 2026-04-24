@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Auth\Application\UseCases\SignIn;
 
+use App\Auth\Domain\Contracts\UserRepositoryInterface;
 use App\Auth\Infrastructure\Exceptions\NotFoundException;
-use App\Auth\Infrastructure\Repositories\EloquentUserRepository;
+use App\Shared\Domain\Contracts\HasherInterface;
+use App\Shared\Domain\Contracts\TokenCreatorInterface;
 use App\Shared\Domain\ValueObjects\Email;
-use App\Shared\Infrastructure\Services\HasherService;
-use App\Shared\Infrastructure\Services\SanctumTokenCreatorService;
 use Exception;
 
 readonly class SignInHandler
 {
     public function __construct(
-        private EloquentUserRepository     $userRepository,
-        private HasherService              $hasherService,
-        private SanctumTokenCreatorService $tokenCreator
+        private UserRepositoryInterface $userRepository,
+        private HasherInterface $hasherService,
+        private TokenCreatorInterface $tokenCreator
     ) {}
 
     /**

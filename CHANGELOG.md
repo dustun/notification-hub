@@ -7,8 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added (Planned)
-- Logout functionality
+### Added
+- Authentication test baseline
+  - feature tests for sign up, sign in and email verification
+  - unit test for repository mapping of `email_verified_at`
+- RabbitMQ-first queue baseline in configuration
+  - `rabbitmq` connection added to `config/queue.php`
+  - failover queue flow updated to start from RabbitMQ
+- Docker-oriented environment template
+  - `.env.example` now points to `pgsql`, `redis` and `rabbitmq` service names
+  - default app metadata updated for the project context
+
+### Changed
+- Switched default infrastructure baseline from `sqlite + database queue` to `pgsql + redis + rabbitmq`
+- Refactored authentication handlers to depend on contracts instead of concrete infrastructure services
+- Wrapped sign-up persistence flow in transaction and moved event dispatch to `afterCommit`
+- Verification email job now uses explicit queue settings, retries, timeout and backoff
+- README needs were replaced with project-specific setup and usage documentation
+
+### Fixed
+- Fixed missing `email_verified_at` mapping from Eloquent model to domain entity
+- Restored `MailSender` contract binding in the application container
+- Fixed sign-in request validation to avoid incorrect password rule usage
+- Fixed mismatch between verification URL expiration and email template text
+- Fixed `public` filesystem disk URL configuration
+- Removed legacy sqlite-oriented bootstrap step from Composer project creation flow
+- Fixed PHPUnit baseline by adding real auth coverage and valid `tests/Unit` structure
 
 ---
 

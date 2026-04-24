@@ -1,59 +1,213 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Notification Hub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+`Notification Hub` is a Laravel 12 learning project for building a real queue-driven application around image uploads, background processing, and notifications.
 
-## About Laravel
+The project is intentionally built around infrastructure that is common in production systems:
+- `RabbitMQ` for asynchronous jobs and queue-based workflows
+- `PostgreSQL` for persistent business data
+- `Redis` for cache and auxiliary fast storage
+- `Filament` for the admin panel
+- `Docker Compose` for a reproducible local environment
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Idea
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+This project is meant to demonstrate why queues matter in a real application instead of a toy CRUD example.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The expected business flow is:
+1. A user uploads an image.
+2. The app stores metadata in PostgreSQL.
+3. A background job is published to RabbitMQ.
+4. A worker processes the image without blocking the HTTP request.
+5. The app stores the result and updates the processing status.
+6. The user or admin can later inspect the result and task history.
 
-## Learning Laravel
+That makes the project a practical sandbox for:
+- background jobs
+- queue prioritization
+- retries and backoff
+- failed jobs
+- dead letter routing
+- event-driven design
+- admin visibility over async workflows
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Architecture Notes
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The codebase follows a modular structure instead of keeping everything in a flat Laravel default layout.
 
-## Laravel Sponsors
+Main modules:
+- `app/Auth` - authentication use cases, requests, responses, domain objects, repository, jobs
+- `app/Mail` - mail abstraction and Laravel mail implementation
+- `app/Shared` - shared contracts, DTOs, services, providers, value objects
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+This keeps HTTP, business logic, infrastructure and domain concerns more clearly separated.
 
-### Premium Partners
+## Main Dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Core framework and application packages:
+- [Laravel 12](https://laravel.com/docs/12.x)
+- [Laravel Sanctum](https://laravel.com/docs/12.x/sanctum)
+- [Filament](https://filamentphp.com/docs)
+- [RabbitMQ Laravel Queue Driver](https://github.com/vyuldashev/laravel-queue-rabbitmq)
+- [RabbitMQ](https://www.rabbitmq.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Redis](https://redis.io/)
+- [Intervention Image](https://image.intervention.io/)
+- [Spatie Laravel Data](https://spatie.be/docs/laravel-data)
+- [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary)
 
-## Contributing
+Developer tooling:
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Task](https://taskfile.dev/)
+- [PHPStan](https://phpstan.org/)
+- [Laravel Pint](https://laravel.com/docs/12.x/pint)
+- [PHP CS Fixer](https://cs.symfony.com/)
+- [GitHub Actions](https://docs.github.com/actions)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Infrastructure Services
 
-## Code of Conduct
+The local environment is described in [`docker-compose.yml`](/Users/imranpskhu/projects/image-processor/docker-compose.yml:1).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Services:
+- `app` - PHP 8.3 FPM application container
+- `caddy` - web server
+- `pgsql` - PostgreSQL 16
+- `redis` - Redis 7
+- `rabbitmq` - RabbitMQ 4 with management UI
 
-## Security Vulnerabilities
+Useful local endpoints:
+- application: [http://localhost](http://localhost)
+- RabbitMQ management: [http://localhost:15672](http://localhost:15672)
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+RabbitMQ default credentials in local Docker:
+- username: `guest`
+- password: `guest`
 
-## License
+PostgreSQL default credentials in local Docker:
+- database: `image_processor`
+- username: `root`
+- password: `1234`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Environment Setup
+
+1. Copy the environment template:
+
+```bash
+cp .env.example .env
+```
+
+2. Review and adjust values if needed.
+
+3. Start containers:
+
+```bash
+task up-build
+```
+
+4. Generate application key:
+
+```bash
+task artisan -- key:generate
+```
+
+5. Run migrations:
+
+```bash
+task artisan -- migrate
+```
+
+If you use plain Docker instead of `task`:
+
+```bash
+docker compose up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+```
+
+## .env Variables
+
+The project template already targets Docker service names and the queue-first baseline.
+
+Important variables:
+
+```env
+APP_NAME="Notification Hub"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+APP_LOCALE=ru
+APP_FALLBACK_LOCALE=en
+
+DB_CONNECTION=pgsql
+DB_HOST=pgsql
+DB_PORT=5432
+DB_DATABASE=image_processor
+DB_USERNAME=root
+DB_PASSWORD=1234
+
+CACHE_STORE=redis
+QUEUE_CONNECTION=rabbitmq
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
+RABBITMQ_VHOST=/
+RABBITMQ_QUEUE=default
+RABBITMQ_WORKER=default
+```
+
+Mail settings for local development depend on your chosen provider.
+
+For simple local logging:
+
+```env
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+If later you connect a real SMTP provider, update:
+- `MAIL_MAILER`
+- `MAIL_HOST`
+- `MAIL_PORT`
+- `MAIL_USERNAME`
+- `MAIL_PASSWORD`
+- `MAIL_ENCRYPTION`
+
+## Working With The Project
+
+The recommended workflow is based on [`Taskfile.yml`](/Users/imranpskhu/projects/image-processor/Taskfile.yml:1).
+
+Available commands:
+
+- `task up` - start containers without rebuild
+- `task up-build` - rebuild and start containers
+- `task rebuild` - full rebuild without cache, including volume reset
+- `task down` - stop the project
+- `task restart` - restart running containers
+- `task logs` - watch app logs
+- `task shell` - open a shell inside the app container
+- `task artisan -- <command>` - run artisan commands
+- `task php` - check PHP version and required extensions
+- `task phpstan` - run PHPStan
+- `task phpstan:level9` - run stricter PHPStan analysis
+
+Examples:
+
+```bash
+task up
+task artisan -- migrate
+task artisan -- queue:work rabbitmq --queue=notifications
+task artisan -- test
+task phpstan
+```
+
+## Changelog
+
+Project history is tracked in [CHANGELOG.md](/Users/imranpskhu/projects/image-processor/CHANGELOG.md:1).
