@@ -7,9 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (Planned)
+- Image processing domain
+- Task management for background jobs
+- Filament resources for future bounded contexts
+
+---
+
+## [0.3.3] - 2026-04-24
+
+### Added
+- OpenAPI documentation for all auth HTTP endpoints using PHP attributes
+  - sign up
+  - sign in
+  - verify email
+  - logout
+- Base OpenAPI specification with API info, server, auth tag, and Sanctum bearer security scheme
+- Swagger generation feature test to verify docs build and contain expected auth routes
+
+### Changed
+- Refactored logout endpoint to fully match the project use case flow
+  - request
+  - response
+  - input
+  - output
+  - handler
+- Renamed CLI admin command to match the `<Domain><CLI><Action>` naming convention
+- Kept console command registration in the shared infrastructure provider
+
+### Fixed
+- Verified Swagger generation works through `l5-swagger:generate`
+- Verified formatting, tests, and static analysis after the refactor
+
+---
+
+## [0.3.2] - 2026-04-24
+
 ### Added
 - Authentication test baseline
-  - feature tests for sign up, sign in and email verification
+  - feature tests for sign up, sign in, logout, and email verification
   - unit test for repository mapping of `email_verified_at`
 - RabbitMQ-first queue baseline in configuration
   - `rabbitmq` connection added to `config/queue.php`
@@ -17,13 +53,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docker-oriented environment template
   - `.env.example` now points to `pgsql`, `redis` and `rabbitmq` service names
   - default app metadata updated for the project context
+- Filament user management inside the `Auth` module
+  - modular `UserResource` with forms, table, infolist, and pages
+  - configured navigation icon, group, badge, and admin UX polish
+- Project CLI admin creation command with domain-oriented naming
+  - custom command based on `EloquentUser`
+  - command registration through shared console provider
 
 ### Changed
 - Switched default infrastructure baseline from `sqlite + database queue` to `pgsql + redis + rabbitmq`
 - Refactored authentication handlers to depend on contracts instead of concrete infrastructure services
 - Wrapped sign-up persistence flow in transaction and moved event dispatch to `afterCommit`
 - Verification email job now uses explicit queue settings, retries, timeout and backoff
-- README needs were replaced with project-specific setup and usage documentation
+- README was replaced with project-specific setup and usage documentation
+- Filament resource discovery now supports module-oriented placement under `app/*`
+- Logout endpoint now follows the same request/response/input/output/handler flow as the rest of the auth module
 
 ### Fixed
 - Fixed missing `email_verified_at` mapping from Eloquent model to domain entity
@@ -121,7 +165,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Switched from Laravel Sail to fully custom Docker environment
 
-[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/Drukster/image-processor/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/Drukster/image-processor/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/Drukster/image-processor/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/Drukster/image-processor/releases/tag/v0.3.0
 [0.2.0]: https://github.com/Drukster/image-processor/releases/tag/v0.2.0
