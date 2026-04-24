@@ -32,8 +32,14 @@ class LogoutRequest extends FormRequest
     {
         $user = $this->user();
 
-        return $user instanceof EloquentUser
-            ? $user->getAuthIdentifier()
+        if (! $user instanceof EloquentUser) {
+            return '';
+        }
+
+        $identifier = $user->getAuthIdentifier();
+
+        return is_string($identifier)
+            ? $identifier
             : '';
     }
 

@@ -62,6 +62,7 @@ Developer tooling:
 - [Laravel Pint](https://laravel.com/docs/12.x/pint)
 - [PHP CS Fixer](https://cs.symfony.com/)
 - [GitHub Actions](https://docs.github.com/actions)
+- [Dependabot](https://docs.github.com/code-security/dependabot/dependabot-version-updates)
 
 ## Infrastructure Services
 
@@ -123,6 +124,12 @@ If you use plain Docker instead of `task`:
 docker compose up -d --build
 docker compose exec app php artisan key:generate
 docker compose exec app php artisan migrate
+```
+
+6. Install repository git hooks so local checks run before `commit` and `push`:
+
+```bash
+task hooks:install
 ```
 
 ## .env Variables
@@ -197,6 +204,13 @@ Available commands:
 - `task php` - check PHP version and required extensions
 - `task phpstan` - run PHPStan
 - `task phpstan:level9` - run stricter PHPStan analysis
+- `task test` - run the Laravel test suite
+- `task swagger:generate` - generate OpenAPI documentation
+- `task check` - run the local quality gate (`cs:dry`, `phpstan:level9`, `test`)
+- `task pre-push` - explicit pre-push verification flow
+- `task ci` - local alias for the CI-equivalent quality gate
+- `task hooks:install` - activate repository git hooks
+- `task hooks:uninstall` - revert to the default Git hook path
 
 Examples:
 
@@ -204,9 +218,47 @@ Examples:
 task up
 task artisan -- migrate
 task artisan -- queue:work rabbitmq --queue=notifications
-task artisan -- test
-task phpstan
+task test
+task check
+task ci
 ```
+
+## Local Quality Gate
+
+The repository contains tracked Git hooks in [`.githooks`](/Users/imranpskhu/projects/image-processor/.githooks/pre-commit:1).
+
+Once you run `task hooks:install`, Git will execute the same local quality gate before both `commit` and `push`.
+
+The hook runs:
+- `task cs:dry`
+- `task phpstan:level9`
+- `task test`
+
+If any command fails, Git aborts the current `commit` or `push` and prints the failing step in the terminal.
+
+## CI Checks
+
+GitHub Actions mirrors the same quality gate in [`.github/workflows/lint-and-test.yml`](/Users/imranpskhu/projects/image-processor/.github/workflows/lint-and-test.yml:1).
+
+Current CI jobs:
+- Laravel tests
+- PHPStan level 9
+- PHP CS Fixer dry run
+
+This gives you two layers of protection:
+- local hooks block bad commits and pushes before they leave your machine
+- GitHub Actions verifies the branch again on `push` and `pull_request`
+
+## Dependabot
+
+Dependabot is configured in [`.github/dependabot.yml`](/Users/imranpskhu/projects/image-processor/.github/dependabot.yml:1).
+
+It checks for dependency updates and opens pull requests automatically for:
+- Composer packages
+- npm packages
+- GitHub Actions
+
+The bot does not update your project continuously in the background. It works on a schedule, scans manifest files such as `composer.json` and `package.json`, compares them with available upstream releases, and then creates upgrade PRs with a small diff you can review, test, and merge manually.
 
 ## Changelog
 
