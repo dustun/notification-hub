@@ -11,7 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image processing domain
 - Task management for background jobs
 - Filament resources for future bounded contexts
-- Universal system logs
+
+## [0.4.1] - 2026-04-26
+
+### Added
+- Centralized system logging for application activity and failures
+  - HTTP request activity logging middleware
+  - exception logging through application bootstrap configuration
+  - dedicated `system_logs` model and logging service
+- Filament resources for operational monitoring
+  - full system action log resource
+  - separate error log resource for warnings, errors, and critical issues
+  - detailed log pages with HTTP context, user context, and structured payload data
+- Advanced filtering for system logs in the admin panel
+  - level
+  - category
+  - HTTP method
+  - status code
+  - date range
+- Feature tests for request logging and unhandled exception logging
+
+### Changed
+- Improved health widgets in the admin panel with clearer Russian labels and more readable system resource output
+- Added application-level media events into the shared operational logging flow
+
+### Fixed
+- Improved operational visibility by surfacing structured errors directly in the admin panel
+
+---
 
 ## [0.4.0] - 2026-04-26
 
@@ -42,34 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed false client-side file type rejection during media upload by validating selected type on the server side
 - Fixed recursive memory issue in the media form placeholder that could break opening the create page
 - Fixed default disk resolution in the media form to use configured storage settings instead of hardcoded fallback
-
----
-
-## [0.4.1] - 2026-04-26
-
-### Added
-- Centralized system logging for application activity and failures
-  - HTTP request activity logging middleware
-  - exception logging through application bootstrap configuration
-  - dedicated `system_logs` model and logging service
-- Filament resources for operational monitoring
-  - full system action log resource
-  - separate error log resource for warnings, errors, and critical issues
-  - detailed log pages with HTTP context, user context, and structured payload data
-- Advanced filtering for system logs in the admin panel
-  - level
-  - category
-  - HTTP method
-  - status code
-  - date range
-- Feature tests for request logging and unhandled exception logging
-
-### Changed
-- Improved health widgets in the admin panel with clearer Russian labels and more readable system resource output
-- Added application-level media events into the shared operational logging flow
-
-### Fixed
-- Improved operational visibility by surfacing structured errors directly in the admin panel
 
 ---
 
@@ -252,7 +251,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Switched from Laravel Sail to fully custom Docker environment
 
 [Unreleased]: https://github.com/Drukster/image-processor/compare/v0.4.1...HEAD
-[0.4.1]: https://github.com/Drukster/image-processor/compare/v0.3.4...v0.4.1
+[0.4.1]: https://github.com/Drukster/image-processor/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/Drukster/image-processor/compare/v0.3.4...v0.4.0
 [0.3.4]: https://github.com/Drukster/image-processor/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/Drukster/image-processor/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/Drukster/image-processor/compare/v0.3.1...v0.3.2
