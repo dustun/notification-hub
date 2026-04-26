@@ -2,6 +2,11 @@ version: '3'
 
 tasks:
 
+  default:
+    desc: Показать список доступных задач
+    cmds:
+      - task --list
+
   up:
     desc: Запустить проект (БЕЗ пересборки — быстро)
     cmds:
@@ -36,7 +41,7 @@ tasks:
   artisan:
     desc: Запустить artisan команду (полное название)
     cmds:
-      - sh -c 'docker compose exec app php artisan "$@"' -- "$@"
+      - sh -c 'docker compose exec -T app php artisan "$@"' -- "$@"
 
   shell:
     desc: Зайти в контейнер
@@ -46,30 +51,67 @@ tasks:
   php:
     desc: Проверить версию PHP и расширения
     cmds:
-      - docker compose exec app php -v
-      - docker compose exec app php -m | grep -E 'redis|sockets|pdo_pgsql'
+      - docker compose exec -T app php -v
+      - docker compose exec -T app php -m | grep -E 'redis|sockets|pdo_pgsql'
 
   cs:
     desc: PHP CS Fixer — исправить код
     cmds:
-      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --verbose
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --sequential --verbose
 
   cs:dry:
     desc: PHP CS Fixer — проверить без изменений
     cmds:
-      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --dry-run --verbose
+      - ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --using-cache=no --dry-run --sequential --verbose
+
+  test:
+    desc: Запустить тесты Laravel
+    cmds:
+      - docker compose exec -T app php artisan test
 
   phpstan:
     desc: Запустить PHPStan анализ кода (уровень 8)
     cmds:
-      - docker compose exec app ./vendor/bin/phpstan analyse --memory-limit=1G
+      - docker compose exec -T app ./vendor/bin/phpstan analyse --memory-limit=1G
 
   phpstan:level9:
     desc: Запустить PHPStan на максимальном уровне 9 (очень строго)
     cmds:
-      - docker compose exec app ./vendor/bin/phpstan analyse --level=9 --memory-limit=1G
+      - docker compose exec -T app ./vendor/bin/phpstan analyse --level=9 --memory-limit=1G
 
   phpstan:baseline:
     desc: Создать baseline (чтобы не фиксить старые ошибки сразу)
     cmds:
-      - docker compose exec app ./vendor/bin/phpstan analyse --generate-baseline phpstan-baseline.neon
+      - docker compose exec -T app ./vendor/bin/phpstan analyse --generate-baseline phpstan-baseline.neon
+
+  swagger:generate:
+    desc: Сгенерировать OpenAPI документацию
+    cmds:
+      - docker compose exec -T app php artisan l5-swagger:generate
+
+  check:
+    desc: Полный локальный quality gate перед commit/push
+    cmds:
+      - task cs:dry
+      - task phpstan:level9
+      - task test
+
+  pre-push:
+    desc: Явный сценарий проверки перед push
+    cmds:
+      - task check
+
+  ci:
+    desc: Локальный прогон того же набора проверок, что и в CI
+    cmds:
+      - task check
+
+  hooks:install:
+    desc: Подключить git hooks из репозитория
+    cmds:
+      - git config core.hooksPath .githooks
+
+  hooks:uninstall:
+    desc: Вернуть стандартный путь git hooks
+    cmds:
+      - git config --unset core.hooksPath

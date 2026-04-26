@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => env('CACHE_STORE', 'redis'),
 
     /*
     |--------------------------------------------------------------------------
@@ -112,6 +112,12 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
+    'prefix' => (static function (): string {
+        $name = env('APP_NAME', 'laravel');
+        $base = Str::slug(is_string($name) ? $name : 'laravel').'-cache-';
 
+        $prefix = env('CACHE_PREFIX', $base);
+
+        return is_string($prefix) ? $prefix : $base;
+    })(),
 ];

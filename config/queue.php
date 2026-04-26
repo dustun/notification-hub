@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => env('QUEUE_CONNECTION', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,7 +40,9 @@ return [
             'connection' => env('DB_QUEUE_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
-            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => is_numeric($v = env('DB_QUEUE_RETRY_AFTER', 90))
+                ? (int) $v
+                : 90,
             'after_commit' => false,
         ],
 
@@ -48,7 +50,9 @@ return [
             'driver' => 'beanstalkd',
             'host' => env('BEANSTALKD_QUEUE_HOST', 'localhost'),
             'queue' => env('BEANSTALKD_QUEUE', 'default'),
-            'retry_after' => (int) env('BEANSTALKD_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => is_numeric($v = env('BEANSTALKD_QUEUE_RETRY_AFTER', 90))
+                ? (int) $v
+                : 90,
             'block_for' => 0,
             'after_commit' => false,
         ],
@@ -68,9 +72,39 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            'retry_after' => is_numeric($v = env('REDIS_QUEUE_RETRY_AFTER', 90))
+                ? (int) $v
+                : 90,
             'block_for' => null,
             'after_commit' => false,
+        ],
+
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
+            'connection' => 'default',
+            'hosts' => [
+                [
+                    'host' => env('RABBITMQ_HOST', '127.0.0.1'),
+                    'port' => env('RABBITMQ_PORT', 5672),
+                    'user' => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
+                    'vhost' => env('RABBITMQ_VHOST', '/'),
+                ],
+            ],
+            'worker' => env('RABBITMQ_WORKER', 'default'),
+            'options' => [
+                'queue' => [
+                    'exchange' => env('RABBITMQ_EXCHANGE', 'image-processor'),
+                    'exchange_type' => env('RABBITMQ_EXCHANGE_TYPE', 'direct'),
+                    'exchange_routing_key' => env('RABBITMQ_ROUTING_KEY', '%s'),
+                    'prioritize_delayed' => env('RABBITMQ_PRIORITIZE_DELAYED', false),
+                    'queue_max_priority' => env('RABBITMQ_QUEUE_MAX_PRIORITY', 10),
+                    'reroute_failed' => env('RABBITMQ_REROUTE_FAILED', true),
+                    'failed_exchange' => env('RABBITMQ_FAILED_EXCHANGE', 'image-processor.failed'),
+                    'failed_routing_key' => env('RABBITMQ_FAILED_ROUTING_KEY', '%s.failed'),
+                ],
+            ],
         ],
 
         'deferred' => [
@@ -84,7 +118,7 @@ return [
         'failover' => [
             'driver' => 'failover',
             'connections' => [
-                'database',
+                'rabbitmq',
                 'deferred',
             ],
         ],
@@ -103,7 +137,7 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION', 'sqlite'),
+        'database' => env('DB_CONNECTION', 'pgsql'),
         'table' => 'job_batches',
     ],
 
@@ -122,7 +156,7 @@ return [
 
     'failed' => [
         'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION', 'sqlite'),
+        'database' => env('DB_CONNECTION', 'pgsql'),
         'table' => 'failed_jobs',
     ],
 
