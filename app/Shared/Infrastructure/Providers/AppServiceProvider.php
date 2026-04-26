@@ -8,6 +8,8 @@ use App\Auth\Domain\Contracts\UserRepositoryInterface;
 use App\Auth\Infrastructure\Repositories\EloquentUserRepository;
 use App\Mail\Application\Contracts\MailSender;
 use App\Mail\Infrastructure\Services\LaravelMailSender;
+use App\Media\Infrastructure\Models\EloquentMedia;
+use App\Media\Infrastructure\Support\MediaPathGenerator;
 use App\Shared\Domain\Contracts\HasherInterface;
 use App\Shared\Domain\Contracts\TokenCreatorInterface;
 use App\Shared\Infrastructure\Services\HasherService;
@@ -47,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $storageDisk = config('filesystems.disks', 'public');
+        $storageDisk = is_string($storageDisk) ? $storageDisk : 'public';
+
+        config()->set('media-library.media_model', EloquentMedia::class);
+        config()->set('media-library.path_generator', MediaPathGenerator::class);
+        config()->set('media-library.disk_name', $storageDisk);
     }
 }
