@@ -11,6 +11,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image processing domain
 - Task management for background jobs
 - Filament resources for future bounded contexts
+- Universal system logs
+
+## [0.4.0] - 2026-04-26
+
+### Added
+- Unified media storage foundation based on `spatie/laravel-medialibrary`
+  - `MediaAsset` registry model for application-level media records
+  - custom `EloquentMedia` model for media-library integration
+  - media type detection for images, video, audio, PDF, documents, spreadsheets, presentations, archives, and generic files
+- Modular Filament admin resource for media management
+  - media list, create, edit, and view pages
+  - media table, form, and infolist inside the `Media` module
+  - shared form field wrappers for file upload, text inputs, and rich editor components
+- Media storage path generator with directory separation by file type
+- Media feature tests for unified asset creation and type validation
+
+### Changed
+- Converted media type storage to numeric enum values instead of strings
+- Moved media UI texts to direct Russian labels in the resource layer
+- Added media form autofill from uploaded file metadata
+  - original file name
+  - extension
+  - MIME type
+  - suggested logical name
+  - detected media type
+  - readable file size
+
+### Fixed
+- Fixed false client-side file type rejection during media upload by validating selected type on the server side
+- Fixed recursive memory issue in the media form placeholder that could break opening the create page
+- Fixed default disk resolution in the media form to use configured storage settings instead of hardcoded fallback
 
 ---
 
