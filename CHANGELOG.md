@@ -12,6 +12,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Task management for background jobs
 - Filament resources for future bounded contexts
 
+## [0.4.1] - 2026-04-26
+
+### Added
+- Centralized system logging for application activity and failures
+  - HTTP request activity logging middleware
+  - exception logging through application bootstrap configuration
+  - dedicated `system_logs` model and logging service
+- Filament resources for operational monitoring
+  - full system action log resource
+  - separate error log resource for warnings, errors, and critical issues
+  - detailed log pages with HTTP context, user context, and structured payload data
+- Advanced filtering for system logs in the admin panel
+  - level
+  - category
+  - HTTP method
+  - status code
+  - date range
+- Feature tests for request logging and unhandled exception logging
+
+### Changed
+- Improved health widgets in the admin panel with clearer Russian labels and more readable system resource output
+- Added application-level media events into the shared operational logging flow
+
+### Fixed
+- Improved operational visibility by surfacing structured errors directly in the admin panel
+
+---
+
+## [0.4.0] - 2026-04-26
+
+### Added
+- Unified media storage foundation based on `spatie/laravel-medialibrary`
+  - `MediaAsset` registry model for application-level media records
+  - custom `EloquentMedia` model for media-library integration
+  - media type detection for images, video, audio, PDF, documents, spreadsheets, presentations, archives, and generic files
+- Modular Filament admin resource for media management
+  - media list, create, edit, and view pages
+  - media table, form, and infolist inside the `Media` module
+  - shared form field wrappers for file upload, text inputs, and rich editor components
+- Media storage path generator with directory separation by file type
+- Media feature tests for unified asset creation and type validation
+
+### Changed
+- Converted media type storage to numeric enum values instead of strings
+- Moved media UI texts to direct Russian labels in the resource layer
+- Added media form autofill from uploaded file metadata
+  - original file name
+  - extension
+  - MIME type
+  - suggested logical name
+  - detected media type
+  - readable file size
+
+### Fixed
+- Fixed false client-side file type rejection during media upload by validating selected type on the server side
+- Fixed recursive memory issue in the media form placeholder that could break opening the create page
+- Fixed default disk resolution in the media form to use configured storage settings instead of hardcoded fallback
+
 ---
 
 ## [0.3.4] - 2026-04-24
@@ -192,7 +250,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Switched from Laravel Sail to fully custom Docker environment
 
-[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.3.4...HEAD
+[Unreleased]: https://github.com/Drukster/image-processor/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/Drukster/image-processor/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/Drukster/image-processor/compare/v0.3.4...v0.4.0
 [0.3.4]: https://github.com/Drukster/image-processor/compare/v0.3.3...v0.3.4
 [0.3.3]: https://github.com/Drukster/image-processor/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/Drukster/image-processor/compare/v0.3.1...v0.3.2
