@@ -8,6 +8,7 @@ use App\Media\Application\Support\MediaTypeDetector;
 use App\Media\Domain\Enums\MediaType;
 use App\Media\Infrastructure\Models\EloquentMedia;
 use App\Media\Infrastructure\Models\EloquentMediaAsset;
+use App\Shared\Infrastructure\Services\SystemLogManager;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
@@ -19,11 +20,17 @@ readonly class MediaAssetManager
     public function __construct(
         private DatabaseManager $database,
         private MediaTypeDetector $mediaTypeDetector,
+        private SystemLogManager $systemLogManager,
     ) {}
 
     /**
      * @param string|UploadedFile $file
+     * @param string $name
+     * @param string|null $uploadedBy
+     * @param string|null $description
      * @param array<string, mixed> $customProperties
+     * @param MediaType|null $expectedType
+     * @return EloquentMediaAsset
      * @throws Throwable
      */
     public function createFromFile(
@@ -76,6 +83,19 @@ readonly class MediaAssetManager
             return $freshAsset;
         });
 
+        $this->systemLogManager->info(
+            category: 'media',
+            message: sprintf('Создан новый медиафайл "%s".', $asset->name),
+            action: 'create',
+            context: [
+                'media_asset_id' => $asset->id,
+                'media_type' => $asset->media_type->label(),
+                'mime_type' => $asset->mime_type,
+                'size' => $asset->size,
+            ],
+            userId: $uploadedBy,
+        );
+
         return $asset;
     }
 
@@ -123,6 +143,22 @@ readonly class MediaAssetManager
 
             return $freshAsset;
         });
+
+        $uploadedBy = is_string($updatedAsset->uploaded_by) ? $updatedAsset->uploaded_by : null;
+
+        $this->systemLogManager->info(
+            category: 'media',
+            message: sprintf('Обновлён медиафайл "%s".', $updatedAsset->name),
+            action: 'update',
+            context: [
+                'media_asset_id' => $updatedAsset->id,
+                'media_type' => $updatedAsset->media_type->label(),
+                'mime_type' => $updatedAsset->mime_type,
+                'size' => $updatedAsset->size,
+                'file_replaced' => $file !== null,
+            ],
+            userId: $uploadedBy,
+        );
 
         return $updatedAsset;
     }
