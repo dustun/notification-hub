@@ -14,7 +14,7 @@
         "intervention/image": "^4.0",
         "jetbrains/phpstorm-attributes": "^1.2",
         "laravel-lang/lang": "^15.29",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^13.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0.2",
         "predis/predis": "^3.4",
